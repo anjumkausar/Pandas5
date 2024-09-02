@@ -1,0 +1,37 @@
+import pandas as pd
+
+def department_highest_salary(employee: pd.DataFrame, department: pd.DataFrame) -> pd.DataFrame:
+    df = employee.merge(department, left_on = 'departmentId', right_on = 'id', how = 'left')
+    max_salary = df.groupby('departmentId')['salary'].transform('max')
+    df = df[df['salary'] == max_salary]
+    return df[['name_y', 'name_x', 'salary']].rename(columns = {'name_y' : 'department', 'name_x' : 'Employee'})
+
+
+    #Using Python
+    salaryDict = {}
+    for i in range(len(employee)):
+        salary = employee['salary'][i]
+        d_id = employee['departmentId'][i]
+        if d_id in salaryDict:
+            if salary > salaryDict[d_id]:
+                salaryDict[d_id] = salary
+        else:
+            salaryDict[d_id] = salary
+    deptDict = {}
+    for i in range(len(department)):
+        name = department['name'][i]
+        d_id = department['id'][i]
+        deptDict[d_id] = name
+    result = []
+    for i in range(len(employee)):
+        salary = employee['salary'][i]
+        d_id = employee['departmentId'][i]
+        name = employee['name'][i]
+        if salary == salaryDict[d_id]:
+            result.append([d_id, name, salary])
+    for element in result:
+        d_id = element[0]
+        element[0] = deptDict[d_id]
+    print(result)
+    return pd.DataFrame(result,columns = ['department', 'employee', 'salary'])
+    
